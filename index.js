@@ -13,5 +13,13 @@ asyncController(function* gen() {
     console.log('The error is handled here:', err);
   }
 
+  return "finish";
+
+})
+.then(function(result) {
+  console.log('end message:', result);
+})
+.catch(function(err) {
+  console.log('handle the uncaught errors:', err);
 });
 
