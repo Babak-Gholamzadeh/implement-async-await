@@ -1,29 +1,19 @@
 function asyncController(genFunction) {
-  var genResult = genFunction();
-
-  return new Promise(function (resolve, reject) {
-
-    iterator('next');
-    function iterator(method, value) {
-
+  var genObject = genFunction();
+  return new Promise((resolve, reject) => {
+    (function iterator(method, value) {
       try {
-        var yieldResult = genResult[method](value);
-      } catch (err) {
+        var nextObject = genObject[method](value);
+      }
+      catch(err) {
         reject(err);
         return;
       }
-
-      if (yieldResult.done) return resolve(yieldResult.value);
-
-      var promiseObject = Promise.resolve(yieldResult.value);
+      if(nextObject.done) return resolve(nextObject.value);
+      const promiseObject = Promise.resolve(nextObject.value);
       promiseObject
-        .then(function (data) {
-          iterator('next', data);
-        })
-        .catch(function (err) {
-          iterator('throw', err);
-        });
-    }
-
+        .then(iterator.bind(null, 'next'))
+        .catch(iterator.bind(null, 'throw'));
+    })('next', undefined);
   });
 }
