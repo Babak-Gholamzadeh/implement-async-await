@@ -4,10 +4,10 @@ function asyncController(genFunction) {
   iterator('next');
   function iterator(method, value) {
     var yieldResult = genResult[method](value);
-
     if (yieldResult.done) return;
 
-    var promiseObject = yieldResult.value;
+    var promiseObject = Promise.resolve(yieldResult.value);
+
     promiseObject
       .then(function (data) {
         iterator('next', data);
@@ -16,4 +16,5 @@ function asyncController(genFunction) {
         iterator('throw', err);
       });
   }
+
 }
