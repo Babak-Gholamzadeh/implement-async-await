@@ -1,16 +1,19 @@
 function asyncController(genFunction) {
   var genResult = genFunction();
 
-  iterator();
-  function iterator(arg) {
-    var yieldResult = genResult.next(arg);
+  iterator('next');
+  function iterator(method, value) {
+    var yieldResult = genResult[method](value);
 
-    if(yieldResult.done) return;
+    if (yieldResult.done) return;
 
     var promiseObject = yieldResult.value;
-    promiseObject.then(function (data) {
-      iterator(data);
-    });
+    promiseObject
+      .then(function (data) {
+        iterator('next', data);
+      })
+      .catch(function (err) {
+        iterator('throw', err);
+      });
   }
-
 }
